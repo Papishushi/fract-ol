@@ -6,14 +6,9 @@
 /*   By: dmoliner <dmoliner@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 01:45:51 by dmoliner          #+#    #+#             */
-/*   Updated: 2023/11/16 21:41:17 by dmoliner         ###   ########.fr       */
+/*   Updated: 2023/11/16 21:53:08 by dmoliner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// -----------------------------------------------------------------------------
-// Codam Coding College, Amsterdam @ 2022-2023 by W2Wizard.
-// See README in the root project for more information.
-// -----------------------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,8 +48,6 @@ typedef struct	s_fractol
 	uint32_t		frames;
 	t_fractal_type	type;
 }				t_fractol;
-
-
 
 static t_fractol fractol;
 
