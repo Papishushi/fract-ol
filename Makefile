@@ -5,43 +5,123 @@
 #                                                     +:+ +:+         +:+      #
 #    By: dmoliner <dmoliner@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/11/16 02:23:01 by dmoliner          #+#    #+#              #
-#    Updated: 2023/11/16 02:23:44 by dmoliner         ###   ########.fr        #
+#    Created: 2022/10/14 13:12:12 by dmoliner          #+#    #+#              #
+#    Updated: 2023/12/03 00:09:11 by dmoliner         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= fractol
+# Directories
+SRC_DIR := ./source
+PRINTF_DIR := ./printf
+LIBFT_DIR := ./libft
 
-SRCDIR	= ./source
-HEADDIR	= ./header
-OBJDIR	= ./.obj
-FTDIR	= ./libft
-MLXDIR	= ./MLX42
-MLXLIB	= ./$(MLXDIR)/libmlx42.a
+BUILD_DIR := ./build
 
-SRC		= main.c
-OBJ		= $(addprefix $(OBJDIR)/,$(SRC:.c=.o))
+SRCS =	ft_check_apollonian.c \
+		ft_check_julia.c \
+		ft_check_mandelbrot.c \
+		ft_input_hooks.c \
+		ft_close_task.c \
+		ft_render.c \
+		ft_render_utils.c \
+		main.c
 
-CC		= gcc
-CFLAGS	= -I $(HEADDIR) -lglfw -L"/Users/$(id -un)/.brew/opt/glfw/lib/" -framework Cocoa -framework OpenGL -framework IOKit
+PRINTFSRCS =	ft_printf.c \
+				print_char.c \
+				print_hex.c \
+				print_int.c \
+				print_ptr.c \
+				print_str.c \
+				print_uint.c
 
-all: obj $(FT) $(NAME)
+LIBFTSRCS =	ft_isalpha.c \
+			ft_isdigit.c \
+			ft_isalnum.c \
+			ft_isascii.c \
+			ft_isprint.c \
+			ft_strlen.c \
+			ft_memset.c \
+			ft_bzero.c \
+			ft_memcpy.c \
+			ft_memmove.c \
+			ft_strlcpy.c \
+			ft_strlcat.c \
+			ft_toupper.c \
+			ft_tolower.c \
+			ft_strchr.c \
+			ft_strrchr.c \
+			ft_strncmp.c \
+			ft_memchr.c \
+			ft_memcmp.c \
+			ft_strnstr.c \
+			ft_atoi.c \
+			ft_calloc.c \
+			ft_strdup.c \
+			ft_substr.c \
+			ft_strjoin.c \
+			ft_strtrim.c \
+			ft_split.c \
+			ft_itoa.c \
+			ft_strmapi.c \
+			ft_striteri.c \
+			ft_putchar_fd.c \
+			ft_putstr_fd.c \
+			ft_putendl_fd.c \
+			ft_putnbr_fd.c \
+			ft_lstnew.c \
+			ft_lstadd_front.c \
+			ft_lstsize.c \
+			ft_lstlast.c \
+			ft_lstadd_back.c \
+			ft_lstdelone.c \
+			ft_lstclear.c \
+			ft_lstiter.c \
+			ft_lstmap.c
 
-obj:
-	mkdir -p $(OBJDIR)
+FRACTOL_NAME = fractol
+FRACTOL_FILE = main.c
+NAME = libftprintf.a
+CC = gcc
+AR = ar -rcs
+CFLAGS := -c -Wall -Wextra -Werror
+LDFLAGS := -L . -lftprintf
 
-$(OBJDIR)/%.o:$(SRCDIR)/%.c
-	$(CC) $< $(MLXLIB) $(CFLAGS) -o $@
+# Object files
+OBJS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRCS))
+PRINTFOBJS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(PRINTFSRCS))
+LIBOBJS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(LIBFTSRCS))
 
-$(NAME): $(OBJ)
-	echo Hola
+# Phony targets
+.PHONY: all clean fclean re
+# Default
+all: ${NAME} $(FRACTOL_NAME)
 
-clean:
-	rm -rf $(OBJDIR)
-	make -C $(FTDIR) clean
+# Linking the library
+$(NAME): $(PRINTFOBJS) $(LIBOBJS) Makefile
+	$(AR) $@ $(PRINTFOBJS) $(LIBOBJS)
 
-fclean: clean
-	rm -rf $(NAME)
-	make -C $(FT) fclean
+$(FRACTOL_NAME): $(OBJS) $(NAME) Makefile
+	$(CC) -g $(OBJS) -fsanitize=address -L . -lftprintf -lmlx -framework OpenGL -framework AppKit -o $(FRACTOL_NAME)
 
-re: fclean all
+# Build targets
+$(BUILD_DIR)/%.o: $(PRINTF_DIR)/%.c | $(BUILD_DIR) Makefile
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/%.o: $(LIBFT_DIR)/%.c | $(BUILD_DIR) Makefile
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR) Makefile
+	$(CC) -Wall -Wextra -Werror -Imlx -c $< -o $@
+
+# Create build directory if it doesn't exist
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Cleaning
+clean :
+	rm -rf $(PRINTFOBJS) $(LIBOBJS) $(OBJS)
+
+fclean : clean
+	rm -f $(NAME) ${FRACTOL_NAME}
+
+re : fclean all
